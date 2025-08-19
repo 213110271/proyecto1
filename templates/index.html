@@ -24,23 +24,16 @@
             <form id="form-newton-raphson">
                 <label for="fx_nr">Función f(x):</label>
                 <input type="text" id="fx_nr" name="fx_nr" value="x**3 - x - 2" required>
-
                 <label for="dfx_nr">Derivada f'(x):</label>
                 <input type="text" id="dfx_nr" name="dfx_nr" value="3*x**2 - 1" required>
-
                 <label for="x0_nr">Valor inicial x0:</label>
                 <input type="number" id="x0_nr" name="x0_nr" step="any" value="1.5" required>
-
                 <label for="tolerancia_nr">Tolerancia:</label>
                 <input type="number" id="tolerancia_nr" name="tolerancia_nr" step="any" value="0.0001" required>
-
                 <label for="max_iter_nr">Máx. Iteraciones:</label>
                 <input type="number" id="max_iter_nr" name="max_iter_nr" value="20" required>
-
                 <button type="submit">Calcular Newton-Raphson</button>
             </form>
-
-            <h3>Resultados Newton-Raphson</h3>
             <div id="results-newton-raphson" class="results-table-container">
                 <p>Aquí se mostrarán los resultados y el mensaje final.</p>
             </div>
@@ -54,19 +47,14 @@
             <form id="form-runge-kutta">
                 <label for="fxy_rk">Función f(x, y) (dy/dx):</label>
                 <input type="text" id="fxy_rk" name="fxy_rk" value="x + y" required>
-
                 <label for="x0_rk">Valor inicial x0:</label>
                 <input type="number" id="x0_rk" name="x0_rk" step="any" value="0.0" required>
-
                 <label for="y0_rk">Valor inicial y0:</label>
                 <input type="number" id="y0_rk" name="y0_rk" step="any" value="1.0" required>
-
                 <label for="h_rk">Tamaño de paso h:</label>
                 <input type="number" id="h_rk" name="h_rk" step="any" value="0.1" required>
-
                 <label for="x_final_rk">Valor final x_final:</label>
                 <input type="number" id="x_final_rk" name="x_final_rk" step="any" value="1.0" required>
-
                 <label for="orden_rk">Orden de Runge-Kutta:</label>
                 <select id="orden_rk" name="orden_rk" required>
                     <option value="1">Orden 1 (Euler)</option>
@@ -74,11 +62,8 @@
                     <option value="3">Orden 3</option>
                     <option value="4" selected>Orden 4</option>
                 </select>
-
                 <button type="submit">Calcular Runge-Kutta</button>
             </form>
-
-            <h3>Resultados Runge-Kutta</h3>
             <div id="results-runge-kutta" class="results-table-container">
                 <p>Aquí se mostrarán los resultados y el mensaje final.</p>
             </div>
