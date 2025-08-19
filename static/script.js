@@ -6,14 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsNewtonRaphsonDiv = document.getElementById('results-newton-raphson');
     const newtonRaphsonChartCanvas = document.getElementById('newtonRaphsonChart').getContext('2d');
     let newtonRaphsonChart;
-
     const formRungeKutta = document.getElementById('form-runge-kutta');
     const resultsRungeKuttaDiv = document.getElementById('results-runge-kutta');
     const rungeKuttaChartCanvas = document.getElementById('rungeKuttaChart').getContext('2d');
     let rungeKuttaChart;
 
     const showSelectedMethodForm = () => {
-        if (methodSelect.value === 'newton_raphson') {
+        const selectedMethod = methodSelect.value;
+        if (selectedMethod === 'newton_raphson') {
             newtonRaphsonFormDiv.classList.remove('hidden');
             rungeKuttaFormDiv.classList.add('hidden');
         } else {
@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showSelectedMethodForm();
     methodSelect.addEventListener('change', showSelectedMethodForm);
 
-    // --- Newton-Raphson ---
     formNewtonRaphson.addEventListener('submit', async (event) => {
         event.preventDefault();
         const fx_input = document.getElementById('fx_nr').value;
@@ -66,14 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const drawNewtonRaphsonChart = (data) => {
         if (newtonRaphsonChart) newtonRaphsonChart.destroy();
-
         const labels = data.x_axis_for_graph;
         const functionData = data.y_values_for_graph;
         const iterationPoints = data.x_values_iterations;
         const finalRoot = data.final_root;
-
-        const f_input = document.getElementById('fx_nr').value;
-        const f = new Function('x', 'sqrt','abs','exp','log', `return ${f_input}`);
 
         const datasets = [{
             label: 'f(x)',
@@ -87,12 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (iterationPoints && iterationPoints.length>0) {
             const iterationYValues = iterationPoints.map(x=>{
-                try { return f(x, Math.sqrt, Math.abs, Math.exp, Math.log); }
-                catch(e) { return null; }
+                const fx_input = document.getElementById('fx_nr').value;
+                const entorno_eval = {"x":x,"sqrt":Math.sqrt,"abs":Math.abs,"exp":Math.exp,"log":Math.log};
+                try{return eval(fx_input, entorno_eval);}catch(e){return null;}
             });
             datasets.push({
                 label:'Iteraciones x_n',
-                data: iterationPoints.map((x,i)=>({x:x,y:iterationYValues[i]})),
+                data:iterationPoints.map((x,i)=>({x:x,y:iterationYValues[i]})),
                 backgroundColor:'rgb(255,99,132)',
                 borderColor:'rgb(255,99,132)',
                 type:'scatter',
@@ -100,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        if(finalRoot!==undefined && finalRoot!==null){
+        if(finalRoot!==undefined&&finalRoot!==null){
             datasets.push({
                 label:'Raíz Aproximada',
                 data:[{x:finalRoot,y:0}],
@@ -119,13 +115,21 @@ document.addEventListener('DOMContentLoaded', () => {
             options:{
                 responsive:true,
                 maintainAspectRatio:false,
-                scales:{x:{type:'linear',position:'bottom',title:{display:true,text:'x'}},
-                        y:{title:{display:true,text:'f(x)'}}}
+                scales:{
+                    x:{type:'linear',position:'bottom',title:{display:true,text:'x'}},
+                    y:{title:{display:true,text:'f(x)'},
+                       grid:{color:context=>context.tick.value===0?'rgba(0,0,0,0.5)':'rgba(0,0,0,0.1)'},
+                       min:Math.min(...functionData)*1.1,
+                       max:Math.max(...functionData)*1.1
+                    }
+                },
+                plugins:{
+                    tooltip:{callbacks:{label:context=>{let l=context.dataset.label||'';if(l)l+=': ';if(context.parsed.x!==null&&context.parsed.y!==null)l+=`(x: ${context.parsed.x.toFixed(4)}, y: ${context.parsed.y.toFixed(4)})`;return l;}}}
+                }
             }
         });
     };
 
-    // --- Runge-Kutta ---
     formRungeKutta.addEventListener('submit', async event=>{
         event.preventDefault();
         const fxy_input=document.getElementById('fxy_rk').value;
@@ -167,18 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const drawRungeKuttaChart=data=>{
         if(rungeKuttaChart) rungeKuttaChart.destroy();
+        const labels=data.x_points;
+        const yData=data.y_points;
         rungeKuttaChart=new Chart(rungeKuttaChartCanvas,{
             type:'line',
-            data:{labels:data.x_points,datasets:[{
-                label:'y(x)',
-                data:data.y_points,
-                borderColor:'rgb(255,159,64)',
-                backgroundColor:'rgba(255,159,64,0.2)',
-                fill:false,
-                tension:0.1,
-                pointRadius:3
-            }]},
-            options:{responsive:true,maintainAspectRatio:false,scales:{x:{type:'linear',position:'bottom',title:{display:true,text:'x'}},y:{title:{display:true,text:'y'}}}}
+            data:{labels:labels,datasets:[{label:'Solución y(x)',data:yData,borderColor:'rgb(255,159,64)',backgroundColor:'rgba(255,159,64,0.2)',borderWidth:2,fill:false,tension:0.1,pointRadius:3}]},
+            options:{responsive:true,maintainAspectRatio:false,scales:{x:{type:'linear',position:'bottom',title:{display:true,text:'x'}},y:{title:{display:true,text:'y'}}},plugins:{tooltip:{callbacks:{label:context=>{let l=context.dataset.label||'';if(l)l+=': ';if(context.parsed.x!==null&&context.parsed.y!==null)l+=`(x: ${context.parsed.x.toFixed(4)}, y: ${context.parsed.y.toFixed(4)})`;return l;}}}}}
         });
     };
 });
