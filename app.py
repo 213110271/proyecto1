@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# --- Métodos Numéricos ---
 class Binomio:
     @staticmethod
     def sqrt(x):
@@ -32,6 +31,26 @@ class Binomio:
         return 2 * result
 
     @staticmethod
+    def sin(x, n=15):
+        # Serie de Taylor para sin(x)
+        result = 0
+        term = x
+        for i in range(n):
+            result += term
+            term *= -1 * x * x / ((2 * i + 2) * (2 * i + 3))
+        return result
+
+    @staticmethod
+    def cos(x, n=15):
+        # Serie de Taylor para cos(x)
+        result = 0
+        term = 1
+        for i in range(n):
+            result += term
+            term *= -1 * x * x / ((2 * i + 1) * (2 * i + 2))
+        return result
+
+    @staticmethod
     def newton_raphson_calc(fx_input, dfx_input, x0, tolerancia, max_iter):
         entorno_eval = {
             "x": 0,
@@ -39,6 +58,8 @@ class Binomio:
             "abs": Binomio.abs_val,
             "exp": Binomio.exp,
             "log": Binomio.log,
+            "sin": Binomio.sin,
+            "cos": Binomio.cos
         }
 
         def f(x):
@@ -71,7 +92,6 @@ class Binomio:
                 return {"success": False, "message": str(e), "results": results}
 
             if iteracion == 0:
-                # Graficar f(x) alrededor de x0
                 start_x = x_actual - 5
                 end_x = x_actual + 5
                 step = (end_x - start_x) / 100
@@ -116,7 +136,15 @@ class Binomio:
 
 
 class EcuacionesDiferenciales:
-    _entorno_eval = {"x": 0, "y": 0, "sqrt": Binomio.sqrt, "abs": Binomio.abs_val, "exp": Binomio.exp, "log": Binomio.log}
+    _entorno_eval = {
+        "x": 0, "y": 0,
+        "sqrt": Binomio.sqrt,
+        "abs": Binomio.abs_val,
+        "exp": Binomio.exp,
+        "log": Binomio.log,
+        "sin": Binomio.sin,
+        "cos": Binomio.cos
+    }
 
     @staticmethod
     def _get_f_from_input(fxy_input):
